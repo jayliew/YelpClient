@@ -8,23 +8,31 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController {
+class BusinessesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var businesses: [Business]!
+    
+    // MARK: Outlets
+    
+    @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        Business.searchWithTerm(term: "Thai", completion: { (businesses: [Business]?, error: Error?) -> Void in
-            
-            self.businesses = businesses
-            if let businesses = businesses {
-                for business in businesses {
-                    print(business.name!)
-                    print(business.address!)
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        Business.searchWithTerm(
+            term: "Thai",
+            completion: { (businesses: [Business]?, error: Error?) -> Void in
+                self.businesses = businesses
+                if let businesses = businesses {
+                    for business in businesses {
+                        print(business.name!)
+                        print(business.address!)
+                    }
                 }
-            }
-            
+                self.tableView.reloadData()
             }
         )
         
@@ -39,6 +47,22 @@ class BusinessesViewController: UIViewController {
          }
          */
         
+    }
+    
+    // MARK: UITableView Delegates
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
+        cell.business = businesses[indexPath.row]
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if businesses == nil {
+            return 0
+        }else{
+            return businesses.count
+        }
     }
     
     override func didReceiveMemoryWarning() {

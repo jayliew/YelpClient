@@ -28,7 +28,7 @@ Filter page. Unfortunately, not all the filters in the real Yelp App, are suppor
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you can get done to improve the app functionality!
+- [ ] Using AutoLayout on BusinessCell
 
 ## Video Walkthrough
 

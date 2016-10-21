@@ -59,11 +59,11 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     @IBAction func onCancel(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
     }
-    
-    @IBAction func onSearch(_ sender: AnyObject) {
+
+    @IBAction func onFilter(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
     }
-
+    
     private func yelpCategories() -> [[String:String]]{
         
     let categories = [["name" : "Afghan", "code": "afghani"],

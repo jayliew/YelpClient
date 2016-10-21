@@ -184,7 +184,18 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="OCd-PP-36Q"/>
+                    <navigationItem key="navigationItem" id="OCd-PP-36Q">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="wvK-wm-tSN">
+                            <connections>
+                                <action selector="onCancel:" destination="Uaj-Hi-tDj" id="JZu-fZ-rNl"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Filter" id="Pgs-DZ-fTH">
+                            <connections>
+                                <action selector="onFilter:" destination="Uaj-Hi-tDj" id="qIG-cJ-u2y"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="oG0-94-PLK" id="3y4-ce-870"/>
                     </connections>

@@ -27,13 +27,10 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.dataSource = self
         searchBar.delegate = self
         
-        filteredBusinesses = businesses
-        
+        // disable automatically added insets
         self.automaticallyAdjustsScrollViewInsets = false
-        
-        //let nav = self.navigationController?.navigationItem
-        //nav.titleView = searchBar
-        
+
+        // put search bar in nav bar
         navigationItem.titleView = searchBar
         
         Business.searchWithTerm(
@@ -46,6 +43,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
                         print(business.address!)
                     }
                 }
+                self.filteredBusinesses = businesses
                 self.tableView.reloadData()
             }
         )
@@ -99,15 +97,16 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
-        cell.business = businesses[indexPath.row]
+        //cell.business = businesses[indexPath.row]
+        cell.business = filteredBusinesses[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if businesses == nil {
+        if filteredBusinesses == nil {
             return 0
         }else{
-            return businesses.count
+            return filteredBusinesses.count
         }
     }
     

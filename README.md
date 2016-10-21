@@ -10,7 +10,7 @@ Search results page:
 
 - [x] Table rows should be dynamic height according to the content height.
 - [x] Custom cells should have the proper Auto Layout constraints.
-- [ ] Search bar should be in the navigation bar (doesn't have to expand to show location like the real Yelp app does).
+- [x] Search bar should be in the navigation bar (doesn't have to expand to show location like the real Yelp app does).
       - Hint: This is just a UISearchBar that is set as the navigationItem.titleView
 - [ ] Optional: Infinite scroll for restaurant results
 - [ ] Optional: Implement map view of restaurant results
@@ -28,7 +28,7 @@ Filter page. Unfortunately, not all the filters in the real Yelp App, are suppor
 
 The following **additional** features are implemented:
 
-- [ ] Using AutoLayout on BusinessCell
+- [x] Using AutoLayout on BusinessCell
 
 ## Video Walkthrough
 

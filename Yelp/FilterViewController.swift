@@ -8,12 +8,27 @@
 
 import UIKit
 
-class FilterViewController: UIViewController {
+class Preferences {
+    var deals = false
+}
 
+class FilterViewController: UITableViewController {
+
+    
+    // MARK: Properties
+    
+    var currentPrefs: Preferences!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        currentPrefs = currentPrefs ?? Preferences()
 
-        // Do any additional setup after loading the view.
+        initSwitches()
+    }
+
+    private func initSwitches() {
+        //autoRefreshSwitch?.on = currentPrefs.autoRefresh
     }
 
     override func didReceiveMemoryWarning() {
@@ -21,6 +36,13 @@ class FilterViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func onCancel(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func onSearch(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+    }
 
     /*
     // MARK: - Navigation

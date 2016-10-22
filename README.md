@@ -29,6 +29,7 @@ Filter page. Unfortunately, not all the filters in the real Yelp App, are suppor
 The following **additional** features are implemented:
 
 - [x] Using AutoLayout on BusinessCell
+- [x] Extra protocol added so that the category filter switch states are saved even after the filters view controller is missed--so that the user doesn't have to re-select all the previous categories they entered
 
 ## Video Walkthrough
 

@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class BusinessesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, FilterViewControllerDelegate {
     
     // MARK: Outlets
     
@@ -19,6 +19,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     var businesses: [Business]!
     var filteredBusinesses: [Business]!
+    var switchStates: [Int:Bool]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +27,9 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
+        //FilterViewControllerDelegate
+        
+        switchStates = [Int:Bool]()
         
         // disable automatically added insets
         self.automaticallyAdjustsScrollViewInsets = false
@@ -60,6 +64,12 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
          */
         
     } // viewDidLoad
+    
+    // MARK: FilterViewController Delegate
+    
+    func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool]){
+        self.switchStates = filterViewController.switchStates
+    }
     
     // MARK: UISearchBar Delegates
     
@@ -97,8 +107,9 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as! BusinessCell
-        //cell.business = businesses[indexPath.row]
+        
         cell.business = filteredBusinesses[indexPath.row]
+        
         return cell
     }
     
@@ -115,14 +126,19 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         // Dispose of any resources that can be recreated.
     }
     
-    /*
      // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if(segue.identifier == "FiltersSegue"){
+            let nav = segue.destination as! UINavigationController
+            let fvc = nav.topViewController as! FilterViewController
+            
+            fvc.switchStates = switchStates
+            
+            fvc.delegate = self
+
+            print(switchStates)
+        }
+    }
     
 }

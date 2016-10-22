@@ -122,7 +122,7 @@
                     <navigationItem key="navigationItem" id="i16-rG-CON">
                         <barButtonItem key="leftBarButtonItem" title="Filter" id="tZ9-Cf-vrn">
                             <connections>
-                                <segue destination="x3u-J4-PEo" kind="presentation" id="P33-BE-IqY"/>
+                                <segue destination="x3u-J4-PEo" kind="presentation" identifier="FiltersSegue" id="P33-BE-IqY"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -135,7 +135,7 @@
             </objects>
             <point key="canvasLocation" x="2727.1999999999998" y="357.57121439280365"/>
         </scene>
-        <!--Filter View Controller-->
+        <!--Filters-->
         <scene sceneID="JLa-li-gr9">
             <objects>
                 <viewController id="Uaj-Hi-tDj" customClass="FilterViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
@@ -164,7 +164,11 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hs3-vH-TPl"/>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hs3-vH-TPl">
+                                                    <connections>
+                                                        <action selector="onValueChanged:" destination="BTi-sR-d53" eventType="valueChanged" id="jjO-5G-fG1"/>
+                                                    </connections>
+                                                </switch>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="trailingMargin" secondItem="hs3-vH-TPl" secondAttribute="trailing" constant="8" id="WkV-BH-qDp"/>
@@ -184,7 +188,7 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="OCd-PP-36Q">
+                    <navigationItem key="navigationItem" title="Filters" id="OCd-PP-36Q">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="wvK-wm-tSN">
                             <connections>
                                 <action selector="onCancel:" destination="Uaj-Hi-tDj" id="JZu-fZ-rNl"/>

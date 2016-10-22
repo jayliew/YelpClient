@@ -12,8 +12,14 @@ class Preferences {
     var deals = false
 }
 
+@objc protocol FilterViewControllerDelegate{
+    // This is to pass the switchStates back to BusinessViewController,
+    // so that the state persists and the user doesn't have to keep 
+    // re-selecting their previous choice
+    @objc optional func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool])
+}
 
-class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
 
     // MARK: Outlets
     
@@ -23,6 +29,8 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     
     var currentPrefs: Preferences!
     var categories: [[String:String]]!
+    var switchStates: [Int:Bool]!
+    weak var delegate: FilterViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,11 +41,16 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         
+        
         initSwitches()
     }
     
     private func initSwitches() {
         //autoRefreshSwitch?.on = currentPrefs.autoRefresh
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        delegate?.filterViewController?(filterViewController: self, didSwitchStates: switchStates)
     }
     
     // MARK: UITableView Delegates
@@ -50,8 +63,22 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
         
         cell.switchLabel.text = categories[indexPath.row]["name"]
+        cell.delegate = self
+        
+        if(switchStates[indexPath.row] != nil){
+            cell.onSwitch.isOn = switchStates[indexPath.row]!
+        }else{
+            cell.onSwitch.isOn = false
+        }
         
         return cell
+    }
+    
+    // MARK: SwitchCellDelegate
+    
+    func switchCell(switchCell: SwitchCell, didChangeValue value: Bool){
+        let indexPath = tableView.indexPath(for: switchCell)
+        switchStates[indexPath!.row] = value
     }
     
     // MARK: Actions

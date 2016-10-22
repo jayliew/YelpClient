@@ -16,7 +16,7 @@ class Preferences {
     // This is to pass the switchStates back to BusinessViewController,
     // so that the state persists and the user doesn't have to keep 
     // re-selecting their previous choice
-    @objc optional func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool])
+    @objc optional func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool], deals: Bool)
 }
 
 class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
@@ -31,6 +31,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     var categories: [[String:String]]!
     var switchStates: [Int:Bool]!
     weak var delegate: FilterViewControllerDelegate?
+    var searchDeals: Bool!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,30 +52,47 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: UITableView Delegates
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
     }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
+        if(section == 0){
+            return 1
+        }else if(section == 1){
+            return categories.count
+        }
+        return 0
+    } // numberOfRowsInSection
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
-        
-        cell.switchLabel.text = categories[indexPath.row]["name"]
-        cell.delegate = self
-        
-        if(switchStates[indexPath.row] != nil){
-            cell.onSwitch.isOn = switchStates[indexPath.row]!
-        }else{
-            cell.onSwitch.isOn = false
+        if(indexPath.section == 0){
+            cell.switchLabel.text = "Offering A Deal"
+            cell.onSwitch.isOn = searchDeals
+            cell.delegate = self
+        }else if(indexPath.section == 1){
+            cell.switchLabel.text = categories[indexPath.row]["name"]
+            cell.delegate = self
+            if(switchStates[indexPath.row] != nil){
+                cell.onSwitch.isOn = switchStates[indexPath.row]!
+            }else{
+                cell.onSwitch.isOn = false
+            }
         }
         return cell
-    }
+    } // cellForRow
     
     // MARK: SwitchCellDelegate
     
     func switchCell(switchCell: SwitchCell, didChangeValue value: Bool){
-        let indexPath = tableView.indexPath(for: switchCell)
-        switchStates[indexPath!.row] = value
-    }
+        let indexPath = tableView.indexPath(for: switchCell)        
+        if(indexPath?.section == 0){
+            searchDeals = value
+        }else if(indexPath?.section == 1){
+            switchStates[indexPath!.row] = value
+        }
+    } // didChangeValue
     
     // MARK: Actions
     
@@ -83,7 +101,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     }
 
     @IBAction func onFilter(_ sender: AnyObject) {
-        delegate?.filterViewController?(filterViewController: self, didSwitchStates: switchStates)
+        delegate?.filterViewController?(filterViewController: self, didSwitchStates: switchStates, deals: searchDeals)
         dismiss(animated: true, completion: nil)
     }
     

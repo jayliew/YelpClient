@@ -23,6 +23,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     var searchTerm: String!
     var categories: [[String:String]]!
     var searchCategories: [String]!
+    var searchDeals: Bool!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +37,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         searchTerm = "" // Tim said to use a blank search term
         categories = yelpCategories()
         searchCategories = [""]
+        searchDeals = false
         
         // disable automatically added insets
         self.automaticallyAdjustsScrollViewInsets = false
@@ -46,16 +48,14 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         callAPI()
         
     } // viewDidLoad
-    
-    // MARK: FilterViewController Delegate
-    
+
     func callAPI(){
         
         Business.searchWithTerm(
             term: searchTerm,
             sort: YelpSortMode.bestMatched,
             categories: searchCategories,
-            deals: false,
+            deals: searchDeals,
             completion: { (businesses: [Business]?, error: Error?) -> Void in
                 self.businesses = businesses
                 if let businesses = businesses {
@@ -96,13 +96,16 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
          }
          }
          */
+        
     } // callAPI()
     
-    func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool]){
+    // MARK: FilterViewController Delegate
+    
+    func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool], deals: Bool){
 
         self.switchStates = switchStates
         searchCategories = [String]()
-        
+        searchDeals = deals
         for (k,v) in switchStates{
             if(v == true){
                 searchCategories.append(categories[k]["code"]!)
@@ -117,7 +120,6 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         if(searchText.isEmpty){
             self.filteredBusinesses = self.businesses
         }else{
-            
             self.filteredBusinesses = []
             for business in businesses{
                 if let name = business.name{
@@ -126,7 +128,6 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
                     }
                 }
             }
-            
         }
         tableView.reloadData()
     }
@@ -173,7 +174,8 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
             let nav = segue.destination as! UINavigationController
             let fvc = nav.topViewController as! FilterViewController
             
-            fvc.switchStates = switchStates            
+            fvc.switchStates = switchStates
+            fvc.searchDeals = searchDeals
             fvc.delegate = self
         }
     }

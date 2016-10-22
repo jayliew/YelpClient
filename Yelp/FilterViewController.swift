@@ -16,7 +16,16 @@ class Preferences {
     // This is to pass the switchStates back to BusinessViewController,
     // so that the state persists and the user doesn't have to keep 
     // re-selecting their previous choice
-    @objc optional func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool], deals: Bool)
+    @objc optional func filterViewController(
+        filterViewController: FilterViewController,
+        didSwitchStates switchStates: [Int:Bool],
+        deals: Bool,
+        distancePoint3: Bool,
+        distance1Mile: Bool,
+        distance3Mile: Bool,
+        distance5Mile: Bool,
+        distance20Mile: Bool
+        )
 }
 
 class FilterViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
@@ -33,6 +42,12 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     weak var delegate: FilterViewControllerDelegate?
     var searchDeals: Bool!
     
+    var distancePoint3: Bool!
+    var distance1Mile: Bool!
+    var distance3Mile: Bool!
+    var distance5Mile: Bool!
+    var distance20Mile: Bool!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,7 +56,6 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
 
         tableView.dataSource = self
         tableView.delegate = self
-        
         
         initSwitches()
     }
@@ -52,14 +66,34 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: UITableView Delegates
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if(section == 0){
+            return "Deals"
+        }else if(section == 1){
+            return "Distance"
+        }else if(section == 2){
+            return "Sort By"
+        }else if(section == 3){
+            return "Categories"
+        }
+        return ""
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 4
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if(section == 0){
             return 1
-        }else if(section == 1){
+        }
+        else if(section == 1){
+            return 5
+        }
+        else if(section == 2){
+            return 0
+        }
+        else if(section == 3){
             return categories.count
         }
         return 0
@@ -68,12 +102,30 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
         if(indexPath.section == 0){
+            cell.delegate = self
             cell.switchLabel.text = "Offering A Deal"
             cell.onSwitch.isOn = searchDeals
-            cell.delegate = self
         }else if(indexPath.section == 1){
-            cell.switchLabel.text = categories[indexPath.row]["name"]
             cell.delegate = self
+            if(indexPath.row == 0){
+                cell.switchLabel.text = "0.3 miles"
+                cell.onSwitch.isOn = distancePoint3
+            }else if(indexPath.row == 1){
+                cell.switchLabel.text = "1 miles"
+                cell.onSwitch.isOn = distance1Mile
+            }else if(indexPath.row == 2){
+                cell.switchLabel.text = "3 miles"
+                cell.onSwitch.isOn = distance3Mile
+            }else if(indexPath.row == 3){
+                cell.switchLabel.text = "5 miles"
+                cell.onSwitch.isOn = distance5Mile
+            }else if(indexPath.row == 4){
+                cell.switchLabel.text = "20 miles"
+                cell.onSwitch.isOn = distance20Mile
+            }
+        }else if(indexPath.section == 3){
+            cell.delegate = self
+            cell.switchLabel.text = categories[indexPath.row]["name"]
             if(switchStates[indexPath.row] != nil){
                 cell.onSwitch.isOn = switchStates[indexPath.row]!
             }else{
@@ -86,10 +138,27 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     // MARK: SwitchCellDelegate
     
     func switchCell(switchCell: SwitchCell, didChangeValue value: Bool){
-        let indexPath = tableView.indexPath(for: switchCell)        
+        let indexPath = tableView.indexPath(for: switchCell)
         if(indexPath?.section == 0){
             searchDeals = value
         }else if(indexPath?.section == 1){
+            let row = indexPath!.row
+            if(row == 0){
+                distancePoint3 = value
+            }
+            else if (row == 1){
+                distance1Mile = value
+            }
+            else if (row == 2){
+                distance3Mile = value
+            }
+            else if (row == 3){
+                distance5Mile = value
+            }
+            else if (row == 4){
+                distance20Mile = value
+            }
+        }else if(indexPath?.section == 3){
             switchStates[indexPath!.row] = value
         }
     } // didChangeValue
@@ -101,7 +170,16 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     }
 
     @IBAction func onFilter(_ sender: AnyObject) {
-        delegate?.filterViewController?(filterViewController: self, didSwitchStates: switchStates, deals: searchDeals)
+        delegate?.filterViewController?(
+            filterViewController: self,
+            didSwitchStates: switchStates,
+            deals: searchDeals,
+            distancePoint3: distancePoint3,
+            distance1Mile: distance1Mile,
+            distance3Mile: distance3Mile,
+            distance5Mile: distance5Mile,
+            distance20Mile: distance20Mile
+        )
         dismiss(animated: true, completion: nil)
     }
     

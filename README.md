@@ -45,6 +45,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 - Switch states from Filters View Controller wasn't being saved. As soon as the user navigates back to the main / Business View Controller, his/her previous filters selected would be lost. I did end up adding an additional protocol to pass the switch states back to the main VC.
 
+- Bool variables for storing each of the 5 distance choices could have been better as an Enum
 
 ## License
 

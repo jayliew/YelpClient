@@ -25,6 +25,12 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     var searchCategories: [String]!
     var searchDeals: Bool!
     
+    var distancePoint3: Bool!
+    var distance1Mile: Bool!
+    var distance3Mile: Bool!
+    var distance5Mile: Bool!
+    var distance20Mile: Bool!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,7 +44,13 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         categories = yelpCategories()
         searchCategories = [""]
         searchDeals = false
-        
+
+        distancePoint3 = false
+        distance1Mile = false
+        distance3Mile = false
+        distance5Mile = false
+        distance20Mile = false
+
         // disable automatically added insets
         self.automaticallyAdjustsScrollViewInsets = false
 
@@ -51,11 +63,29 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
 
     func callAPI(){
         
+        var distance: Int?
+        let m2mm = 1609.34 // miles to meter multiplier
+        
+        if(distance20Mile == true){
+            distance = Int(20.0 * m2mm)
+        }else if (distance5Mile == true){
+            distance = Int(5.0 * m2mm)
+        }else if (distance3Mile == true){
+            distance = Int(3.0 * m2mm)
+        }else if (distance1Mile == true){
+            distance = Int(1.0 * m2mm)
+        }else if (distancePoint3 == true){
+            distance = Int(0.3 * m2mm)
+        }else{
+            distance = nil
+        }
+        
         Business.searchWithTerm(
             term: searchTerm,
             sort: YelpSortMode.bestMatched,
             categories: searchCategories,
             deals: searchDeals,
+            distance: distance,
             completion: { (businesses: [Business]?, error: Error?) -> Void in
                 self.businesses = businesses
                 if let businesses = businesses {
@@ -101,11 +131,27 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     
     // MARK: FilterViewController Delegate
     
-    func filterViewController(filterViewController: FilterViewController, didSwitchStates switchStates: [Int:Bool], deals: Bool){
+    func filterViewController(
+        filterViewController: FilterViewController,
+        didSwitchStates switchStates: [Int:Bool],
+        deals: Bool,
+        distancePoint3: Bool,
+        distance1Mile: Bool,
+        distance3Mile: Bool,
+        distance5Mile: Bool,
+        distance20Mile: Bool
+        ){
 
         self.switchStates = switchStates
         searchCategories = [String]()
         searchDeals = deals
+        
+        self.distancePoint3 = distancePoint3
+        self.distance1Mile = distance1Mile
+        self.distance3Mile = distance3Mile
+        self.distance5Mile = distance5Mile
+        self.distance20Mile = distance20Mile
+
         for (k,v) in switchStates{
             if(v == true){
                 searchCategories.append(categories[k]["code"]!)
@@ -173,10 +219,16 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         if(segue.identifier == "FiltersSegue"){
             let nav = segue.destination as! UINavigationController
             let fvc = nav.topViewController as! FilterViewController
-            
+
+            fvc.delegate = self
             fvc.switchStates = switchStates
             fvc.searchDeals = searchDeals
-            fvc.delegate = self
+            
+            fvc.distancePoint3 = distancePoint3
+            fvc.distance1Mile = distance1Mile
+            fvc.distance3Mile = distance3Mile
+            fvc.distance5Mile = distance5Mile
+            fvc.distance20Mile = distance20Mile
         }
     }
     

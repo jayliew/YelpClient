@@ -49,10 +49,6 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         //autoRefreshSwitch?.on = currentPrefs.autoRefresh
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        delegate?.filterViewController?(filterViewController: self, didSwitchStates: switchStates)
-    }
-    
     // MARK: UITableView Delegates
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -70,7 +66,6 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         }else{
             cell.onSwitch.isOn = false
         }
-        
         return cell
     }
     
@@ -88,6 +83,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     }
 
     @IBAction func onFilter(_ sender: AnyObject) {
+        delegate?.filterViewController?(filterViewController: self, didSwitchStates: switchStates)
         dismiss(animated: true, completion: nil)
     }
     

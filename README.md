@@ -43,6 +43,9 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 - [Starter project](https://github.com/jayliew/ios_yelp_swift) was not yet converted to Swift 3. I spent about an hour trying to convert it. The singleton has been implemented in an improved way.
 
+- Switch states from Filters View Controller wasn't being saved. As soon as the user navigates back to the main / Business View Controller, his/her previous filters selected would be lost. I did end up adding an additional protocol to pass the switch states back to the main VC.
+
+
 ## License
 
 [www.jayliew.com](http://www.jayliew.com)

@@ -25,6 +25,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     var searchCategories: [String]!
     var searchDeals: Bool!
     
+    var distanceAuto: Bool!
     var distancePoint3: Bool!
     var distance1Mile: Bool!
     var distance3Mile: Bool!
@@ -45,6 +46,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         searchCategories = [""]
         searchDeals = false
 
+        distanceAuto = false
         distancePoint3 = false
         distance1Mile = false
         distance3Mile = false
@@ -76,10 +78,12 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
             distance = Int(1.0 * m2mm)
         }else if (distancePoint3 == true){
             distance = Int(0.3 * m2mm)
+        }else if (distanceAuto == true){
+            distance = nil
         }else{
             distance = nil
         }
-        
+
         Business.searchWithTerm(
             term: searchTerm,
             sort: YelpSortMode.bestMatched,
@@ -135,6 +139,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         filterViewController: FilterViewController,
         didSwitchStates switchStates: [Int:Bool],
         deals: Bool,
+        distanceAuto: Bool,
         distancePoint3: Bool,
         distance1Mile: Bool,
         distance3Mile: Bool,
@@ -146,6 +151,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         searchCategories = [String]()
         searchDeals = deals
         
+        self.distanceAuto = distanceAuto
         self.distancePoint3 = distancePoint3
         self.distance1Mile = distance1Mile
         self.distance3Mile = distance3Mile
@@ -224,6 +230,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
             fvc.switchStates = switchStates
             fvc.searchDeals = searchDeals
             
+            fvc.distanceAuto = distanceAuto
             fvc.distancePoint3 = distancePoint3
             fvc.distance1Mile = distance1Mile
             fvc.distance3Mile = distance3Mile

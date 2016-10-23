@@ -135,7 +135,45 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     } // cellForRow
     
+    
+    func switchOffAllDistanceCellsExcept(row: Int){
+        
+    }
+    
     // MARK: SwitchCellDelegate
+    
+    func disableOtherDistanceCells(selectedCell: Int){
+
+        if(selectedCell != 0){
+            let ip0 = IndexPath(row: 0, section: 1)
+            let cell0 = tableView.cellForRow(at: ip0) as! SwitchCell
+            cell0.onSwitch.isOn = false
+        }
+
+        if(selectedCell != 1){
+            let ip1 = IndexPath(row: 1, section: 1)
+            let cell1 = tableView.cellForRow(at: ip1) as! SwitchCell
+            cell1.onSwitch.isOn = false
+        }
+        
+        if(selectedCell != 2){
+            let ip2 = IndexPath(row: 2, section: 1)
+            let cell2 = tableView.cellForRow(at: ip2) as! SwitchCell
+            cell2.onSwitch.isOn = false
+        }
+        
+        if(selectedCell != 3){
+            let ip3 = IndexPath(row: 3, section: 1)
+            let cell3 = tableView.cellForRow(at: ip3) as! SwitchCell
+            cell3.onSwitch.isOn = false
+        }
+        
+        if(selectedCell != 4){
+            let ip4 = IndexPath(row: 4, section: 1)
+            let cell4 = tableView.cellForRow(at: ip4) as! SwitchCell
+            cell4.onSwitch.isOn = false
+        }
+    }
     
     func switchCell(switchCell: SwitchCell, didChangeValue value: Bool){
         let indexPath = tableView.indexPath(for: switchCell)
@@ -144,18 +182,33 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         }else if(indexPath?.section == 1){
             let row = indexPath!.row
             if(row == 0){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 0)
+                }
                 distancePoint3 = value
             }
             else if (row == 1){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 1)
+                }
                 distance1Mile = value
             }
             else if (row == 2){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 2)
+                }
                 distance3Mile = value
             }
             else if (row == 3){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 3)
+                }
                 distance5Mile = value
             }
             else if (row == 4){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 4)
+                }
                 distance20Mile = value
             }
         }else if(indexPath?.section == 3){

@@ -8,18 +8,15 @@
 
 import UIKit
 
-class Preferences {
-    var deals = false
-}
-
-@objc protocol FilterViewControllerDelegate{
+protocol FilterViewControllerDelegate: class{
     // This is to pass the switchStates back to BusinessViewController,
     // so that the state persists and the user doesn't have to keep 
     // re-selecting their previous choice
-    @objc optional func filterViewController(
+    func filterViewController(
         filterViewController: FilterViewController,
         didSwitchStates switchStates: [Int:Bool],
         deals: Bool,
+        sortMode: YelpSortMode,
         distanceAuto: Bool,
         distancePoint3: Bool,
         distance1Mile: Bool,
@@ -37,12 +34,11 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: Properties
     
-    var currentPrefs: Preferences!
     var categories: [[String:String]]!
     var switchStates: [Int:Bool]!
     weak var delegate: FilterViewControllerDelegate?
     var searchDeals: Bool!
-    
+    var sortMode: YelpSortMode!
     var distanceAuto: Bool!
     var distancePoint3: Bool!
     var distance1Mile: Bool!
@@ -54,16 +50,8 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         super.viewDidLoad()
         
         categories = yelpCategories()
-        currentPrefs = currentPrefs ?? Preferences()
-
         tableView.dataSource = self
         tableView.delegate = self
-        
-        initSwitches()
-    }
-    
-    private func initSwitches() {
-        //autoRefreshSwitch?.on = currentPrefs.autoRefresh
     }
     
     // MARK: UITableView Delegates
@@ -93,7 +81,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
             return 6
         }
         else if(section == 2){
-            return 0
+            return 3
         }
         else if(section == 3){
             return categories.count
@@ -103,6 +91,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SwitchCell", for: indexPath) as! SwitchCell
+        cell.onSwitch.isOn = false // reset
         if(indexPath.section == 0){
             cell.delegate = self
             cell.switchLabel.text = "Offering A Deal"
@@ -128,6 +117,25 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
                 cell.switchLabel.text = "Auto"
                 cell.onSwitch.isOn = distanceAuto
             }
+        }else if(indexPath.section == 2){
+            cell.delegate = self
+            if(indexPath.row == 0){
+                cell.switchLabel.text = "Best Matched"
+                if(sortMode == .bestMatched){
+                    cell.onSwitch.isOn = true
+                }
+            }else if(indexPath.row == 1){
+                cell.switchLabel.text = "Distance"
+                if(sortMode == .distance){
+                    cell.onSwitch.isOn = true
+                }
+            }else if(indexPath.row == 2){
+                cell.switchLabel.text = "Highest Rated"
+                if(sortMode == .highestRated){
+                    cell.onSwitch.isOn = true
+                }
+            }
+            
         }else if(indexPath.section == 3){
             cell.delegate = self
             cell.switchLabel.text = categories[indexPath.row]["name"]
@@ -142,11 +150,14 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     
     // MARK: SwitchCellDelegate
     
-    func disableOtherDistanceCells(selectedCell: Int){
-        // radio button feature on distance switches
+    func disableOtherDistanceCells(selectedCell: Int, section: Int){
+        // Radio button feature on distance switches
         // disable all other cells (other than the one selected)
+        //
+        // Section 1 has 6 cells total. Section 2 has 3 cells total.
+        
         if(selectedCell != 0){
-            let ip0 = IndexPath(row: 0, section: 1)
+            let ip0 = IndexPath(row: 0, section: section)
             if let cell0 = tableView.cellForRow(at: ip0) as? SwitchCell{
                 cell0.onSwitch.isOn = false
             }
@@ -154,7 +165,7 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         }
 
         if(selectedCell != 1){
-            let ip1 = IndexPath(row: 1, section: 1)
+            let ip1 = IndexPath(row: 1, section: section)
             if let cell1 = tableView.cellForRow(at: ip1) as? SwitchCell{
                 cell1.onSwitch.isOn = false
             }
@@ -162,14 +173,14 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
         }
         
         if(selectedCell != 2){
-            let ip2 = IndexPath(row: 2, section: 1)
+            let ip2 = IndexPath(row: 2, section: section)
             if let cell2 = tableView.cellForRow(at: ip2) as? SwitchCell{
                 cell2.onSwitch.isOn = false
             }
             distance1Mile = false
         }
         
-        if(selectedCell != 3){
+        if(section != 2 && selectedCell != 3){
             let ip3 = IndexPath(row: 3, section: 1)
             if let cell3 = tableView.cellForRow(at: ip3) as? SwitchCell{
                 cell3.onSwitch.isOn = false
@@ -177,14 +188,14 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
             distance3Mile = false
         }
         
-        if(selectedCell != 4){
+        if(section != 2 && selectedCell != 4){
             let ip4 = IndexPath(row: 4, section: 1)
             if let cell4 = tableView.cellForRow(at: ip4) as? SwitchCell{
                 cell4.onSwitch.isOn = false
             }
             distance5Mile = false
         }
-        if(selectedCell != 5){
+        if(section != 2 && selectedCell != 5){
             let ip5 = IndexPath(row: 5, section: 1)
             if let cell5 = tableView.cellForRow(at: ip5) as? SwitchCell{
                 cell5.onSwitch.isOn = false
@@ -202,40 +213,62 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
             
             if(row == 0){
                 if(value == true){
-                    disableOtherDistanceCells(selectedCell: 0)
+                    disableOtherDistanceCells(selectedCell: 0, section: indexPath!.section)
                 }
                 distanceAuto = value
             }
             else if(row == 1){
                 if(value == true){
-                    disableOtherDistanceCells(selectedCell: 1)
+                    disableOtherDistanceCells(selectedCell: 1, section: indexPath!.section)
                 }
                 distancePoint3 = value
             }
             else if (row == 2){
                 if(value == true){
-                    disableOtherDistanceCells(selectedCell: 2)
+                    disableOtherDistanceCells(selectedCell: 2, section: indexPath!.section)
                 }
                 distance1Mile = value
             }
             else if (row == 3){
                 if(value == true){
-                    disableOtherDistanceCells(selectedCell: 3)
+                    disableOtherDistanceCells(selectedCell: 3, section: indexPath!.section)
                 }
                 distance3Mile = value
             }
             else if (row == 4){
                 if(value == true){
-                    disableOtherDistanceCells(selectedCell: 4)
+                    disableOtherDistanceCells(selectedCell: 4, section: indexPath!.section)
                 }
                 distance5Mile = value
             }
             else if (row == 5){
                 if(value == true){
-                    disableOtherDistanceCells(selectedCell: 5)
+                    disableOtherDistanceCells(selectedCell: 5, section: indexPath!.section)
                 }
                 distance20Mile = value
             }
+        }else if(indexPath?.section == 2){
+            let row = indexPath!.row
+    
+            if(row == 0){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 0, section: indexPath!.section)
+                }
+                sortMode = .bestMatched
+            }
+            else if(row == 1){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 1, section: indexPath!.section)
+                }
+                sortMode = .distance
+            }
+            else if(row == 2){
+                if(value == true){
+                    disableOtherDistanceCells(selectedCell: 2, section: indexPath!.section)
+                }
+                sortMode = .highestRated
+            }
+            
         }else if(indexPath?.section == 3){
             switchStates[indexPath!.row] = value
         }
@@ -248,10 +281,11 @@ class FilterViewController: UIViewController, UITableViewDataSource, UITableView
     }
 
     @IBAction func onFilter(_ sender: AnyObject) {
-        delegate?.filterViewController?(
+        delegate?.filterViewController(
             filterViewController: self,
             didSwitchStates: switchStates,
             deals: searchDeals,
+            sortMode: sortMode,
             distanceAuto: distanceAuto,
             distancePoint3: distancePoint3,
             distance1Mile: distance1Mile,

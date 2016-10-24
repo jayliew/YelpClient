@@ -24,7 +24,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
     var categories: [[String:String]]!
     var searchCategories: [String]!
     var searchDeals: Bool!
-    
+    var sortMode: YelpSortMode!
     var distanceAuto: Bool!
     var distancePoint3: Bool!
     var distance1Mile: Bool!
@@ -45,8 +45,8 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         categories = yelpCategories()
         searchCategories = [""]
         searchDeals = false
-
-        distanceAuto = false
+        sortMode = YelpSortMode.bestMatched
+        distanceAuto = true
         distancePoint3 = false
         distance1Mile = false
         distance3Mile = false
@@ -86,7 +86,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
 
         Business.searchWithTerm(
             term: searchTerm,
-            sort: YelpSortMode.bestMatched,
+            sort: sortMode,
             categories: searchCategories,
             deals: searchDeals,
             distance: distance,
@@ -139,6 +139,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         filterViewController: FilterViewController,
         didSwitchStates switchStates: [Int:Bool],
         deals: Bool,
+        sortMode: YelpSortMode,
         distanceAuto: Bool,
         distancePoint3: Bool,
         distance1Mile: Bool,
@@ -150,7 +151,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         self.switchStates = switchStates
         searchCategories = [String]()
         searchDeals = deals
-        
+        self.sortMode = sortMode
         self.distanceAuto = distanceAuto
         self.distancePoint3 = distancePoint3
         self.distance1Mile = distance1Mile
@@ -229,7 +230,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
             fvc.delegate = self
             fvc.switchStates = switchStates
             fvc.searchDeals = searchDeals
-            
+            fvc.sortMode = sortMode
             fvc.distanceAuto = distanceAuto
             fvc.distancePoint3 = distancePoint3
             fvc.distance1Mile = distance1Mile
